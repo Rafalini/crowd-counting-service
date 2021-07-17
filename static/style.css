@@ -1,0 +1,17 @@
+body {
+    background: gray;
+    background-image:url(wood.jpg);
+    color: white;
+}
+h1 {
+    text-align: center;
+    text-decoration: underline;
+    text-transform: uppercase;
+    text-shadow: 2px 2px black;
+}
+
+.video{
+    width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}
