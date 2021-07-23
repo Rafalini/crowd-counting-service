@@ -10,6 +10,8 @@
             </div>
             <h2><a class="article-title" href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h2>
             <p class="article-content">{{ post.content }}</p>
+            <img class="testsm w3-hover-opacity w3-border" src="{{ url_for('static', filename='post_imgs/' + post.picture) }}" style="padding:4px;width:85%">
+<!--            <img src="img_mountains.jpg" class="testsm w3-hover-opacity w3-border" alt="Mountains" style="padding:4px;width:85%">-->
           </div>
         </article>
     {% endfor %}

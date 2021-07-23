@@ -2,9 +2,9 @@ import os
 import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
-from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
-from flaskblog.models import User, Post
+from crowdControll import app, db, bcrypt
+from crowdControll.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
+from crowdControll.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -98,6 +98,9 @@ def new_post():
     form = PostForm()
     if form.validate_on_submit():
         post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            post.picture = picture_file
         db.session.add(post)
         db.session.commit()
         flash('Your post has been created!', 'success')
