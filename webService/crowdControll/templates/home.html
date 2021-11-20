@@ -11,7 +11,7 @@
             <h2><a class="article-title" href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h2>
             <p class="article-content">{{ post.content }}</p>
 <!--            <iframe width="1280" height="720" src="https://www.youtube.com/embed/pTHeY0-P4MY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
-            <img class="testsm w3-hover-opacity w3-border" src="{{ url_for('static', filename='post_imgs/' + post.picture) }}" style="padding:4px;width:85%">
+            <img class="testsm w3-hover-opacity w3-border" src="{{ url_for('static', filename='post_imgs/' + post.image_file) }}" style="padding:4px;width:85%">
 <!--            <img src="img_mountains.jpg" class="testsm w3-hover-opacity w3-border" alt="Mountains" style="padding:4px;width:85%">-->
           </div>
         </article>

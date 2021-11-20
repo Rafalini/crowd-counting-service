@@ -1,23 +1,23 @@
 {% extends "layout.html" %}
 {% block headblock %}
-<!--<style>-->
-<!--            #map_container{-->
-<!--              float:left;-->
-<!--              width:100px;-->
-<!--              height:300px;-->
-<!--              background:green;-->
-<!--              flex-basis: 200px;-->
-<!--              flex-grow: 0;-->
-<!--              flex-shrink: 0;-->
-<!--            }-->
-<!--            #map{-->
-<!--             padding: 10px 20px;-->
-<!--             }-->
-<!--</style>-->
+<style>
+            #map_container{
+              float:left;
+              width:100px;
+              height:300px;
+              background:green;
+              flex-basis: 200px;
+              flex-grow: 0;
+              flex-shrink: 0;
+            }
+            #map{
+             padding: 10px 20px;
+             }
+</style>
 {% endblock headblock %}
 {% block content %}
 <div class="content-section">
-    <form id="form_for_post" method="POST" action="" enctype="multipart/form-data">
+    <form method="POST" action="" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <fieldset class="form-group" id="post_title" style="margin-left: auto; margin-right: auto;">
             <legend class="border-bottom mb-4">{{ legend }}</legend>
@@ -34,7 +34,7 @@
                 {{ form.title(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
-            <div class="form-group" id="content">
+            <div class="form-group" id="content" style="float:left;">
                 {{ form.content.label(class="form-control-label") }}
                 {% if form.content.errors %}
                 {{ form.content(class="form-control form-control-lg is-invalid") }}
@@ -48,38 +48,38 @@
                 {% endif %}
             </div>
               <div id="map_container">
-                <div id="map" style="height:250px;"></div>
+                <div id="map" style="height:250px; width:250px;"></div>
             </div>
-            <input type="text" id="longi" name="longitude" value={{ lon }}>
-            <input type="text" id="lati" name="latitude" value={{ lat }}>
+
+
+<!--             <div id="map" style="float:left; height:200px;"></div>-->
 <!--            <div class="form-group">-->
 <!--                {{ form.latitude.label(class="form-control-label") }}-->
-<!--                {% if form.latitude.errors %}-->
-<!--                {{ form.latitude(class="form-control form-control-lg is-invalid") }}-->
+<!--                {% if form.content.errors %}-->
+<!--                {{ form.content(class="form-control form-control-lg is-invalid") }}-->
 <!--                <div class="invalid-feedback">-->
-<!--                    {% for error in form.latitude.errors %}-->
+<!--                    {% for error in form.content.errors %}-->
 <!--                    <span>{{ error }}</span>-->
 <!--                    {% endfor %}-->
 <!--                </div>-->
 <!--                {% else %}-->
-<!--                {{ form.latitude(class="form-control form-control-lg") }}-->
+<!--                {{ form.content(class="form-control form-control-lg") }}-->
 <!--                {% endif %}-->
 <!--            </div>-->
 <!--            <div class="form-group">-->
 <!--                {{ form.longitude.label(class="form-control-label") }}-->
-<!--                {% if form.longitude.errors %}-->
-<!--                {{ form.longitude(class="form-control form-control-lg is-invalid") }}-->
+<!--                {% if form.content.errors %}-->
+<!--                {{ form.content(class="form-control form-control-lg is-invalid") }}-->
 <!--                <div class="invalid-feedback">-->
-<!--                    {% for error in form.longitude.errors %}-->
+<!--                    {% for error in form.content.errors %}-->
 <!--                    <span>{{ error }}</span>-->
 <!--                    {% endfor %}-->
 <!--                </div>-->
 <!--                {% else %}-->
-<!--                {{ form.longitude(class="form-control form-control-lg") }}-->
+<!--                {{ form.content(class="form-control form-control-lg") }}-->
 <!--                {% endif %}-->
 <!--            </div>-->
-
-            <div class="form-group" id="picture_selector">
+            <div class="form-group" id="picture_selector" style="clear:both;">
                 {{ form.picture.label() }}
                 {{ form.picture(class="form-control-file") }}
                 {% if form.picture.errors %}
@@ -96,42 +96,13 @@
 </div>
 <script type="text/javascript">
 
-      var theMarker = {};
       var map = L.map('map').setView([52.237, 21.017], 11);
-      var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
       });
       map.addLayer(layer);
 
-</script>
-<script>
-    var theMarker = {};
-    var lat = 0;
-    var lon = 0;
-  map.on('click',function(e){
-    lat = e.latlng.lat;
-    lon = e.latlng.lng;
-document.getElementById("longi").value = lon;
-document.getElementById("longi").value = lon;
 
-    console.log("You clicked the map at LAT: "+ lat+" and LONG: "+lon );
-    console.log(document.getElementById("longi").value);
-<!--    console.log(document.getElementById("content").value);-->
-
-        if (theMarker != undefined) {
-              map.removeLayer(theMarker);
-        };
-     theMarker = L.marker([lat,lon]).addTo(map);
-
-<!--       $.post( "/", {-->
-<!--                longitude: lon,-->
-<!--                latitude: lat-->
-<!--                });-->
-
-    });
-
-<!--    document.getElementById("latitude").data = latitude;-->
-<!--    document.getElementById("longitude").data = longitude;-->
 
 </script>
 {% endblock content %}

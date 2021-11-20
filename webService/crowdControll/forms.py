@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, DecimalField
+from wtforms.validators import *
 from crowdControll.models import User
 
 
@@ -58,6 +58,9 @@ class UpdateAccountForm(FlaskForm):
 
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
+    latitude = DecimalField('Latitude', validators=[Optional(), NumberRange(0, 90, 'wrong number')])
+    longitude = DecimalField('Longitude', validators=[Optional(), NumberRange(0, 90, 'wrong number')])
     content = TextAreaField('Content', validators=[DataRequired()])
-    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
+    picture = FileField('Post image', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Post')
+

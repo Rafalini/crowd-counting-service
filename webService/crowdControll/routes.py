@@ -3,6 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from crowdControll import app, db, bcrypt
+from flask_googlemaps import Map
 from crowdControll.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from crowdControll.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
@@ -18,6 +19,12 @@ def home():
 @app.route("/about")
 def about():
     return render_template('about.html', title='About')
+
+
+@app.route("/mapview")
+def mapview():
+    posts = Post.query.all()
+    return render_template('map.html', posts=posts)
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -57,7 +64,7 @@ def logout():
     return redirect(url_for('home'))
 
 
-def save_picture(form_picture):
+def save_profile_picture(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
@@ -71,14 +78,27 @@ def save_picture(form_picture):
     return picture_fn
 
 
+def save_post_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/post_imgs', picture_fn)
+
+    output_size = (500, 500)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+
+    return picture_fn
+
+
 @app.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
-            picture_file = save_picture(form.picture.data)
-            current_user.image_file = picture_file
+            current_user.image_file = save_profile_picture(form.picture.data)
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
@@ -98,11 +118,14 @@ def new_post():
     form = PostForm()
     if form.validate_on_submit():
         post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        lat = form.latitude.data
+        lon = form.longitude.data
         if form.picture.data:
-            picture_file = save_picture(form.picture.data)
-            post.picture = picture_file
+            post.image_file = save_post_picture(form.picture.data)
+        print(post.image_file)
         db.session.add(post)
         db.session.commit()
+        Post.query.all()
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
     return render_template('create_post.html', title='New Post',

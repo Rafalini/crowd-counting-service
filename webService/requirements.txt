@@ -3,7 +3,7 @@ blinker
 certifi
 cffi
 click
-Flask~=2.0.1
+Flask
 Flask-Bcrypt
 Flask-Login
 Flask-Mail
@@ -12,13 +12,12 @@ Flask-WTF
 itsdangerous
 Jinja2
 MarkupSafe
-Pillow~=8.3.1
+Pillow
 pycparser
 six
 SQLAlchemy
 Werkzeug
-WTForms~=2.3.3
+WTForms
 email_validator
-torch~=1.9.0
-torchvision~=0.10.0
-detectron2~=0.5+cu101
+torch
+torchvision

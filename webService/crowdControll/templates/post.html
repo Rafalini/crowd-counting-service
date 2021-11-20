@@ -15,6 +15,7 @@
       </div>
       <h2 class="article-title">{{ post.title }}</h2>
       <p class="article-content">{{ post.content }}</p>
+      <img class="testsm w3-hover-opacity w3-border" src="{{ url_for('static', filename='post_imgs/' + post.image_file) }}"  style="padding:4px;width:85%">
     </div>
   </article>
   <!-- Modal -->
