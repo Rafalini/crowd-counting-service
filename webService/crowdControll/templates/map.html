@@ -9,20 +9,14 @@
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
   });
   map.addLayer(layer);
-<!--  L.marker([52.250,21.017]).addTo(map);-->
-<!--  L.marker([52.252,21.03]).addTo(map);-->
-<!--  L.marker([52.254,21.02]).addTo(map);-->
-<!--    var polygon = L.polygon([-->
-<!--        [52.239, 21.005],-->
-<!--        [52.237, 21.035],-->
-<!--        [52.230, 21.017]-->
-<!--    ]).addTo(map).bindPopup("<strong>Pop up message</strong>").openPopup();-->
 </script>
 
 <script>
     function addMarker(lat,lon,picture){
-        var photoImg = '<img src="../static/post_imgs/default.jpg" height="100px" width="150px"/>';
-
+<!--        console.log("You clicked the map at LAT: "+ lat+" and LONG: "+lon + picture);-->
+        picture = '../static/post_imgs/'+picture
+<!--        console.log(picture);-->
+        var photoImg = '<img src='+picture+' height="100px" width="150px"/>';
         var marker = L.marker([lat,lon]).addTo(map);
         marker.bindPopup(photoImg);
     }
@@ -30,7 +24,6 @@
 
  {% for post in posts %}
       <script>addMarker({{post.latitude}}, {{post.longitude}}, '{{post.image_file}}');</script>
-    {{post.image_file}}
  {% endfor %}
 
 {% endblock content %}

@@ -50,34 +50,8 @@
               <div id="map_container">
                 <div id="map" style="height:250px;"></div>
             </div>
-            <input type="text" id="longi" name="longitude" value={{ lon }}>
-            <input type="text" id="lati" name="latitude" value={{ lat }}>
-<!--            <div class="form-group">-->
-<!--                {{ form.latitude.label(class="form-control-label") }}-->
-<!--                {% if form.latitude.errors %}-->
-<!--                {{ form.latitude(class="form-control form-control-lg is-invalid") }}-->
-<!--                <div class="invalid-feedback">-->
-<!--                    {% for error in form.latitude.errors %}-->
-<!--                    <span>{{ error }}</span>-->
-<!--                    {% endfor %}-->
-<!--                </div>-->
-<!--                {% else %}-->
-<!--                {{ form.latitude(class="form-control form-control-lg") }}-->
-<!--                {% endif %}-->
-<!--            </div>-->
-<!--            <div class="form-group">-->
-<!--                {{ form.longitude.label(class="form-control-label") }}-->
-<!--                {% if form.longitude.errors %}-->
-<!--                {{ form.longitude(class="form-control form-control-lg is-invalid") }}-->
-<!--                <div class="invalid-feedback">-->
-<!--                    {% for error in form.longitude.errors %}-->
-<!--                    <span>{{ error }}</span>-->
-<!--                    {% endfor %}-->
-<!--                </div>-->
-<!--                {% else %}-->
-<!--                {{ form.longitude(class="form-control form-control-lg") }}-->
-<!--                {% endif %}-->
-<!--            </div>-->
+            <input type="hidden" id="longi" name="longitude">
+            <input type="hidden" id="lati" name="latitude">
 
             <div class="form-group" id="picture_selector">
                 {{ form.picture.label() }}
@@ -112,26 +86,14 @@
     lat = e.latlng.lat;
     lon = e.latlng.lng;
 document.getElementById("longi").value = lon;
-document.getElementById("longi").value = lon;
-
-    console.log("You clicked the map at LAT: "+ lat+" and LONG: "+lon );
-    console.log(document.getElementById("longi").value);
-<!--    console.log(document.getElementById("content").value);-->
+document.getElementById("lati").value = lat;
 
         if (theMarker != undefined) {
               map.removeLayer(theMarker);
         };
      theMarker = L.marker([lat,lon]).addTo(map);
 
-<!--       $.post( "/", {-->
-<!--                longitude: lon,-->
-<!--                latitude: lat-->
-<!--                });-->
-
     });
-
-<!--    document.getElementById("latitude").data = latitude;-->
-<!--    document.getElementById("longitude").data = longitude;-->
 
 </script>
 {% endblock content %}

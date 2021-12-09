@@ -61,6 +61,6 @@ class PostForm(FlaskForm):
     latitude = DecimalField('Latitude', validators=[Optional(), NumberRange(0, 90, 'wrong number')])
     longitude = DecimalField('Longitude', validators=[Optional(), NumberRange(0, 90, 'wrong number')])
     content = TextAreaField('Content', validators=[DataRequired()])
-    picture = FileField('Post image', validators=[FileAllowed(['jpg', 'png'])])
+    picture = FileField('Post image', validators=[DataRequired(), FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Post')
 

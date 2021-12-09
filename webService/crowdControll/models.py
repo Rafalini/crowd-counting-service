@@ -25,9 +25,10 @@ class Post(db.Model):
     title = db.Column(db.String(100), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
+    number_of_people = db.Column(db.Integer, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
-    latitude = db.Column(db.Float, nullable=True)
-    longitude = db.Column(db.Float, nullable=True)
+    latitude = db.Column(db.Float, nullable=False, default=45.5)
+    longitude = db.Column(db.Float, nullable=False, default=45.5)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):

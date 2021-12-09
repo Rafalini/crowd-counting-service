@@ -1,18 +1,22 @@
 import os
 import secrets
-from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from crowdControll import app, db, bcrypt
-from flask_googlemaps import Map
 from crowdControll.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from crowdControll.models import User, Post
+from crowdControll import model, device
 from flask_login import login_user, current_user, logout_user, login_required
+import torch
+from PIL import Image
+from torchvision import transforms
 
 
 @app.route("/")
 @app.route("/home")
 def home():
     posts = Post.query.all()
+    print(type(posts))
+    posts.sort(key=lambda x: x.date_posted, reverse=True)
     return render_template('home.html', posts=posts)
 
 
@@ -112,17 +116,24 @@ def account():
                            image_file=image_file, form=form)
 
 
+def predict(inp):
+    inp = transforms.ToTensor()(inp).unsqueeze(0)
+    inp = inp.to(device)
+    with torch.set_grad_enabled(False):
+        outputs, _ = model(inp)
+    return int(torch.sum(outputs).item())
+
+
 @app.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, content=form.content.data, author=current_user)
-        lat = form.latitude.data
-        lon = form.longitude.data
-        if form.picture.data:
-            post.image_file = save_post_picture(form.picture.data)
-        print(post.image_file)
+        post = Post(title=form.title.data, content=form.content.data, number_of_people=0, latitude=form.latitude.data, longitude=form.longitude.data, author=current_user)
+
+        post.image_file = save_post_picture(form.picture.data)
+        post.number_of_people = predict(Image.open(form.picture.data))
+
         db.session.add(post)
         db.session.commit()
         Post.query.all()
