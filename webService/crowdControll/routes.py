@@ -1,21 +1,48 @@
 import os
 import secrets
 from flask import render_template, url_for, flash, redirect, request, abort
-from crowdControll import app, db, bcrypt
+from crowdControll import app, db, bcrypt, queue
 from crowdControll.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from crowdControll.models import User, Post
-from crowdControll import model, device
+from crowdControll.trainedModel.models import vgg19
 from flask_login import login_user, current_user, logout_user, login_required
-import torch
+from crowdControll.trainedModel.models import predict
+from multiprocessing import Process
 from PIL import Image
-from torchvision import transforms
+import torch
+
+model_path = "crowdControll/trainedModel/model_qnrf.pth"
+
+def consumer():
+    print('starting consum....')
+    device = torch.device('cpu')  # device can be "cpu" or "gpu"
+
+    model = vgg19()
+    model.to(device)
+    model.load_state_dict(torch.load(model_path, device))
+    model.eval()
+    while True:
+        entry = queue.get()
+        post = Post.query.get(entry)
+        print('got entry....post id: '+str(entry))
+        picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
+        print('path:'+picture_path)
+        number_of_people = predict(Image.open(picture_path), device, model)
+        print('output number:'+str(number_of_people))
+        post.number_of_people = number_of_people
+        db.session.commit()
+        print('commit post id: '+str(entry))
+
+
+p = Process(target=consumer, args=())
+p.daemon = True
+p.start()
 
 
 @app.route("/")
 @app.route("/home")
 def home():
     posts = Post.query.all()
-    print(type(posts))
     posts.sort(key=lambda x: x.date_posted, reverse=True)
     return render_template('home.html', posts=posts)
 
@@ -87,12 +114,11 @@ def save_post_picture(form_picture):
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(app.root_path, 'static/post_imgs', picture_fn)
-
-    output_size = (500, 500)
+    # output_size = (500, 500)
     i = Image.open(form_picture)
-    i.thumbnail(output_size)
-    i.save(picture_path)
-
+    # i.thumbnail(output_size)
+    i.save(picture_path, quality=100)
+    # i.save(picture_path)
     return picture_fn
 
 
@@ -116,14 +142,6 @@ def account():
                            image_file=image_file, form=form)
 
 
-def predict(inp):
-    inp = transforms.ToTensor()(inp).unsqueeze(0)
-    inp = inp.to(device)
-    with torch.set_grad_enabled(False):
-        outputs, _ = model(inp)
-    return int(torch.sum(outputs).item())
-
-
 @app.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
@@ -132,11 +150,15 @@ def new_post():
         post = Post(title=form.title.data, content=form.content.data, number_of_people=0, latitude=form.latitude.data, longitude=form.longitude.data, author=current_user)
 
         post.image_file = save_post_picture(form.picture.data)
-        post.number_of_people = predict(Image.open(form.picture.data))
+        # post.number_of_people = predict(Image.open(form.picture.data))
+        post.number_of_people = -1
 
         db.session.add(post)
         db.session.commit()
-        Post.query.all()
+        db.session.refresh(post)
+        # predict(Image.open(form.picture.data), post.id)
+        queue.put(post.id)
+        # predictor([form.picture.data, post.id])
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
     return render_template('create_post.html', title='New Post',
