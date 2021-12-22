@@ -6,30 +6,9 @@ from crowdControll.forms import RegistrationForm, LoginForm, UpdateAccountForm, 
 from crowdControll.models import User, Post
 from crowdControll.predictor import Predictor
 from flask_login import login_user, current_user, logout_user, login_required
-# from crowdControll.trainedModel.models import predict
-# from multiprocessing import Process
 from PIL import Image
 
-predictor = Predictor(queue, app, db)
-
-# def consumer():
-#     print('starting consumemr....')
-#     while True:
-#         entry = queue.get()
-#         post = Post.query.get(entry)
-#         print('got entry....post id: '+str(entry))
-#         picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
-#         print('path:'+picture_path)
-#         number_of_people = predict(Image.open(picture_path))
-#         print('output number:'+str(number_of_people))
-#         post.number_of_people = number_of_people
-#         db.session.commit()
-#         print('commit post id: '+str(entry))
-
-
-# p = Process(target=consumer, args=())
-# p.daemon = True
-# p.start()
+predictor = Predictor(queue, db, app)
 
 
 @app.route("/")
@@ -37,6 +16,10 @@ predictor = Predictor(queue, app, db)
 def home():
     posts = Post.query.all()
     posts.sort(key=lambda x: x.date_posted, reverse=True)
+    for post in posts:
+        picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
+        if not os.path.isfile(picture_path):
+            post.image_file = 'default.jpg'
     return render_template('home.html', posts=posts)
 
 
@@ -185,6 +168,8 @@ def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
     if post.author != current_user:
         abort(403)
+    picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
+    os.remove(picture_path)
     db.session.delete(post)
     db.session.commit()
     flash('Your post has been deleted!', 'success')

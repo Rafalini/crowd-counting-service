@@ -1,24 +1,13 @@
 from crowdControll.trainedModel.models import predict, init
 from crowdControll.models import Post
-from multiprocessing import Process, Lock
+from threading import Lock, Thread
 from PIL import Image
 import torch
 import os
 
 
-class Singleton(type):
-    _instance = None
-    _lock = Lock()
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            with cls._lock:
-                if not cls._instance:
-                    cls._instance = super(Singleton, cls).__new__(cls)
-        return cls._instance
-
-
 class SingletonMeta(type):
+
     _instances = {}
     _lock: Lock = Lock()
 
@@ -31,21 +20,23 @@ class SingletonMeta(type):
 
 
 class Predictor(metaclass=SingletonMeta):
-    queue = None
     device = None
     model = None
+    app = None
+    db = None
     proc = None
 
-    def __init__(self, queue, app, db):
-        print('predictor init...')
+    def __init__(self, queue, db, app) -> None:
+        self.db = db
+        self.app = app
         self.queue = queue
         self.device = torch.device('cpu')  # device can be "cpu" or "gpu"
         self.model = init(self.device)
-        self.proc = Process(target=consumer, args=(queue, app, db))
-        self.proc.daemon = True
+        self.proc = Thread(target=consumer, args=(queue, app, db))
         self.proc.start()
+        print("init run")
 
-    def doPrediction(self, inp):
+    def doPredict(self, inp):
         return predict(inp, self.device, self.model)
 
 
@@ -58,7 +49,7 @@ def consumer(queue, app, db):
         print('got entry....post id: ' + str(entry))
         picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
         print('path:' + picture_path)
-        number_of_people = predictor.doPrediction(Image.open(picture_path))
+        number_of_people = predictor.doPredict(Image.open(picture_path))
         print('output number:' + str(number_of_people))
         post.number_of_people = number_of_people
         db.session.commit()
