@@ -25,6 +25,7 @@ class Predictor(metaclass=SingletonMeta):
     app = None
     db = None
     proc = None
+    predictionLock = Lock()
 
     def __init__(self, queue, db, app) -> None:
         self.db = db
@@ -37,7 +38,10 @@ class Predictor(metaclass=SingletonMeta):
         print("init run")
 
     def doPredict(self, inp):
-        return predict(inp, self.device, self.model)
+        result = 0
+        with self.predictionLock:
+            result = predict(inp, self.device, self.model)
+        return result
 
 
 def consumer(queue, app, db):

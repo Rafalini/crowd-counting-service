@@ -1,6 +1,9 @@
 import os
 import secrets
-from flask import render_template, url_for, flash, redirect, request, abort
+from flask import render_template, url_for, flash, redirect, request, abort, jsonify
+from werkzeug import exceptions
+from werkzeug.utils import secure_filename
+
 from crowdControll import app, db, bcrypt, queue
 from crowdControll.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from crowdControll.models import User, Post
@@ -122,7 +125,8 @@ def account():
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, content=form.content.data, number_of_people=0, latitude=form.latitude.data, longitude=form.longitude.data, author=current_user)
+        post = Post(title=form.title.data, content=form.content.data, number_of_people=0, latitude=form.latitude.data,
+                    longitude=form.longitude.data, author=current_user)
 
         post.image_file = save_post_picture(form.picture.data)
         post.number_of_people = -1
@@ -174,3 +178,30 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('home'))
+
+
+@app.route("/predict", methods=['POST'])
+def predict():
+    response = {}
+    i = 0
+
+    while True:
+        requestFile = 'file' + str(i)
+        i += 1
+        print('atempting: ' + requestFile)
+        try:
+            file = request.files[requestFile]
+            print('got: ' + requestFile)
+            if file:
+                filename = secure_filename(file.filename)
+                picture_path = os.path.join(app.root_path, 'static/tmp', filename)
+                file.save(picture_path)
+                result = predictor.doPredict(Image.open(picture_path))
+                print(str(result))
+                response[filename] = result
+                os.remove(picture_path)
+        except exceptions.BadRequestKeyError:
+            print('dodge ')
+            break
+
+    return jsonify(response)
