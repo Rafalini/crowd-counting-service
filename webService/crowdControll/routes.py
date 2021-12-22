@@ -188,10 +188,8 @@ def predict():
     while True:
         requestFile = 'file' + str(i)
         i += 1
-        print('atempting: ' + requestFile)
         try:
             file = request.files[requestFile]
-            print('got: ' + requestFile)
             if file:
                 filename = secure_filename(file.filename)
                 picture_path = os.path.join(app.root_path, 'static/tmp', filename)
@@ -201,7 +199,6 @@ def predict():
                 response[filename] = result
                 os.remove(picture_path)
         except exceptions.BadRequestKeyError:
-            print('dodge ')
             break
 
     return jsonify(response)
