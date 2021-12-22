@@ -4,39 +4,32 @@ from flask import render_template, url_for, flash, redirect, request, abort
 from crowdControll import app, db, bcrypt, queue
 from crowdControll.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from crowdControll.models import User, Post
-from crowdControll.trainedModel.models import vgg19
+from crowdControll.predictor import Predictor
 from flask_login import login_user, current_user, logout_user, login_required
-from crowdControll.trainedModel.models import predict
-from multiprocessing import Process
+# from crowdControll.trainedModel.models import predict
+# from multiprocessing import Process
 from PIL import Image
-import torch
 
-model_path = "crowdControll/trainedModel/model_qnrf.pth"
+predictor = Predictor(queue, app, db)
 
-def consumer():
-    print('starting consum....')
-    device = torch.device('cpu')  # device can be "cpu" or "gpu"
-
-    model = vgg19()
-    model.to(device)
-    model.load_state_dict(torch.load(model_path, device))
-    model.eval()
-    while True:
-        entry = queue.get()
-        post = Post.query.get(entry)
-        print('got entry....post id: '+str(entry))
-        picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
-        print('path:'+picture_path)
-        number_of_people = predict(Image.open(picture_path), device, model)
-        print('output number:'+str(number_of_people))
-        post.number_of_people = number_of_people
-        db.session.commit()
-        print('commit post id: '+str(entry))
+# def consumer():
+#     print('starting consumemr....')
+#     while True:
+#         entry = queue.get()
+#         post = Post.query.get(entry)
+#         print('got entry....post id: '+str(entry))
+#         picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
+#         print('path:'+picture_path)
+#         number_of_people = predict(Image.open(picture_path))
+#         print('output number:'+str(number_of_people))
+#         post.number_of_people = number_of_people
+#         db.session.commit()
+#         print('commit post id: '+str(entry))
 
 
-p = Process(target=consumer, args=())
-p.daemon = True
-p.start()
+# p = Process(target=consumer, args=())
+# p.daemon = True
+# p.start()
 
 
 @app.route("/")
@@ -114,11 +107,10 @@ def save_post_picture(form_picture):
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(app.root_path, 'static/post_imgs', picture_fn)
-    # output_size = (500, 500)
     i = Image.open(form_picture)
+    # output_size = (500, 500)
     # i.thumbnail(output_size)
     i.save(picture_path, quality=100)
-    # i.save(picture_path)
     return picture_fn
 
 
@@ -150,15 +142,11 @@ def new_post():
         post = Post(title=form.title.data, content=form.content.data, number_of_people=0, latitude=form.latitude.data, longitude=form.longitude.data, author=current_user)
 
         post.image_file = save_post_picture(form.picture.data)
-        # post.number_of_people = predict(Image.open(form.picture.data))
         post.number_of_people = -1
-
         db.session.add(post)
         db.session.commit()
         db.session.refresh(post)
-        # predict(Image.open(form.picture.data), post.id)
         queue.put(post.id)
-        # predictor([form.picture.data, post.id])
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
     return render_template('create_post.html', title='New Post',

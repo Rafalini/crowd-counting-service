@@ -3,9 +3,10 @@ import torch.utils.model_zoo as model_zoo
 from torch.nn import functional as F
 from torchvision import transforms
 import torch
-import time
 
-__all__ = ['vgg19']
+model_path = "crowdControll/trainedModel/model_qnrf.pth"
+
+__all__ = ['vgg19', 'model_path', 'predict', 'init']
 model_urls = {
     'vgg19': 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
 }
@@ -61,10 +62,18 @@ def vgg19():
     return model
 
 
+def init(device):
+    model = vgg19()
+    model.to(device)
+    model.load_state_dict(torch.load(model_path, device))
+    model.eval()
+    return model
+
+
 def predict(inp, device, model):
-    time.sleep(10)
     inp = transforms.ToTensor()(inp).unsqueeze(0)
     inp = inp.to(device)
     with torch.set_grad_enabled(False):
         outputs, _ = model(inp)
     return int(torch.sum(outputs).item())
+
