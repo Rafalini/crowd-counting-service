@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+{% block headblock %}
+<!--<style>-->
+<!--            #map_container{-->
+<!--              float:left;-->
+<!--              width:100px;-->
+<!--              height:300px;-->
+<!--              background:green;-->
+<!--              flex-basis: 200px;-->
+<!--              flex-grow: 0;-->
+<!--              flex-shrink: 0;-->
+<!--            }-->
+<!--            #map{-->
+<!--             padding: 10px 20px;-->
+<!--             }-->
+<!--</style>-->
+{% endblock headblock %}
+{% block content %}
+<div class="content-section">
+    <form id="form_for_post" method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group" id="post_title" style="margin-left: auto; margin-right: auto;">
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+            <div class="form-group">
+                {{ form.title.label(class="form-control-label") }}
+                {% if form.title.errors %}
+                {{ form.title(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.title.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.title(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group" id="content">
+                {{ form.content.label(class="form-control-label") }}
+                {% if form.content.errors %}
+                {{ form.content(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.content.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.content(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+              <div id="map_container">
+                <div id="map" style="height:250px;"></div>
+            </div>
+            <input type="hidden" id="longi" name="longitude">
+            <input type="hidden" id="lati" name="latitude">
+
+            <div class="form-group" id="picture_selector">
+                {{ form.picture.label() }}
+                {{ form.picture(class="form-control-file") }}
+                {% if form.picture.errors %}
+                {% for error in form.picture.errors %}
+                <span class="text-danger">{{ error }}</span></br>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+
+      var theMarker = {};
+      var map = L.map('map').setView([52.237, 21.017], 11);
+      var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+      });
+      map.addLayer(layer);
+
+</script>
+<script>
+    var theMarker = {};
+    var lat = 0;
+    var lon = 0;
+  map.on('click',function(e){
+    lat = e.latlng.lat;
+    lon = e.latlng.lng;
+document.getElementById("longi").value = lon;
+document.getElementById("lati").value = lat;
+
+        if (theMarker != undefined) {
+              map.removeLayer(theMarker);
+        };
+     theMarker = L.marker([lat,lon]).addTo(map);
+
+    });
+
+</script>
+{% endblock content %}
