@@ -143,6 +143,9 @@ def new_post():
 @app.route("/post/<int:post_id>")
 def post(post_id):
     post = Post.query.get_or_404(post_id)
+    picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
+    if not os.path.isfile(picture_path):
+        post.image_file = 'default.jpg'
     return render_template('post.html', title=post.title, post=post)
 
 
@@ -173,7 +176,10 @@ def delete_post(post_id):
     if post.author != current_user:
         abort(403)
     picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
-    os.remove(picture_path)
+    try:
+        os.remove(picture_path)
+    except Exception:
+        pass
     db.session.delete(post)
     db.session.commit()
     flash('Your post has been deleted!', 'success')
