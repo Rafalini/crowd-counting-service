@@ -1,9 +1,6 @@
-webService/.idea
-webService/venv
-webService/crowdControll/__pycache__
-webService/crowdControll/site.db
-mobileApp/.idea/
-mobileApp/.gradle/
+.idea
 venv/
+crowdControll/__pycache__
+crowdControll/site.db
 .idea/
 __pycache__/
