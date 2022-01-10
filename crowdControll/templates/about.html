@@ -1,4 +1,23 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="content-section">
     <h1>About Page</h1>
+    <p class="article-content">
+        This is web service for crowd counting, created for the needs of bachelor's degree.
+        It's main purpose is to provide visualization for crowd counting data from pictures.
+        One of the goals was to analyse possible approaches of image processing for people
+        counting and implement one.
+
+    </p>
+
+    <h3><a href="https://arxiv.org/pdf/2009.13077.pdf">Distribution matching as core counting algorithm</a></h3>
+
+    <p class="article-content">
+        In DM-Count, we use Optimal Transport to measure the similarity between the
+        normalized predicted density map and the normalized ground truth density map. To
+        stabilize OT computation, we include a Total Variation loss in our model. We show
+        that the generalization error bound of DM-Count is tighter than that of the
+        Gaussian smoothed methods.
+    </p>
+</div>
 {% endblock content %}

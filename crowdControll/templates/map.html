@@ -3,27 +3,62 @@
 
 <div id="map" style="height: 750px;"></div>
 
+<style>
+    .mycluster {
+        width: 40px;
+        height: 40px;
+        background-color: greenyellow;
+        text-align: center;
+        font-size: 24px;
+        opacity: 1;
+    }
+
+</style>
+
 <script type="text/javascript">
   var map = L.map('map').setView([52.237, 21.017], 11);
     var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
   });
   map.addLayer(layer);
+
+<!--  var markers = L.markerClusterGroup();-->
+
+  var markers = new L.MarkerClusterGroup({
+    iconCreateFunction: function(cluster)
+    {
+        var children = cluster.getAllChildMarkers();
+        var sum = 0;
+        for (var i = 0; i < children.length; i++)
+        {
+            sum += children[i].num;
+        }
+        var html = '<div class="circle">' + sum + '</div>';
+        return L.divIcon({ html: html, className: 'circle', iconSize: L.point(40, 40) });
+    }
+});
 </script>
 
 <script>
-    function addMarker(lat,lon,picture){
+    function addMarker(lat,lon,num,picture){
 <!--        console.log("You clicked the map at LAT: "+ lat+" and LONG: "+lon + picture);-->
         picture = '../static/post_imgs/'+picture
 <!--        console.log(picture);-->
         var photoImg = '<img src='+picture+' height="100px" width="150px"/>';
-        var marker = L.marker([lat,lon]).addTo(map);
+<!--        var marker = L.marker([lat,lon]).addTo(map);-->
+        var marker = L.marker([lat,lon]);
+        marker.num = num;
+        markers.addLayer(marker);
         marker.bindPopup(photoImg);
     }
 </script>
 
  {% for post in posts %}
-      <script>addMarker({{post.latitude}}, {{post.longitude}}, '{{post.image_file}}');</script>
+      <script>addMarker({{post.latitude}}, {{post.longitude}}, {{post.number_of_people}}, '{{post.image_file}}');</script>
  {% endfor %}
+
+<script>
+  map.addLayer(markers);
+</script>
 
 {% endblock content %}
