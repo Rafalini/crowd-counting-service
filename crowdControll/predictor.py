@@ -35,7 +35,6 @@ class Predictor(metaclass=SingletonMeta):
         self.model = init(self.device)
         self.proc = Thread(target=consumer, args=(queue, app, db))
         self.proc.start()
-        print("init run")
 
     def doPredict(self, inp):
         result = 0
@@ -45,16 +44,20 @@ class Predictor(metaclass=SingletonMeta):
 
 
 def consumer(queue, app, db):
-    print('starting consumemr....')
     predictor = Predictor(queue, app, db)
     while True:
-        entry = queue.get()
-        post = Post.query.get(entry)
-        print('got entry....post id: ' + str(entry))
-        picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
-        print('path:' + picture_path)
-        number_of_people = predictor.doPredict(Image.open(picture_path))
-        print('output number:' + str(number_of_people))
-        post.number_of_people = number_of_people
-        db.session.commit()
-        print('commit post id: ' + str(entry))
+        try:
+            entry = queue.get()
+            if entry == 'exit':
+                break
+            post = Post.query.get(entry)
+            print('got entry....post id: ' + str(entry))
+            picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
+            print('path:' + picture_path)
+            number_of_people = predictor.doPredict(Image.open(picture_path))
+            print('output number:' + str(number_of_people))
+            post.number_of_people = number_of_people
+            db.session.commit()
+            print('commit post id: ' + str(entry))
+        except KeyboardInterrupt:
+            print('ignore CTRL-C from worker')

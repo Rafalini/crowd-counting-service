@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 from crowdControll import app, db, bcrypt, queue
 from crowdControll.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
-from crowdControll.models import User, Post
+from crowdControll.models import User, Post, Announcement
 from crowdControll.predictor import Predictor
 from flask_login import login_user, current_user, logout_user, login_required
 from PIL import Image
@@ -204,3 +204,18 @@ def predict():
             break
 
     return jsonify(response)
+
+
+@app.route("/calendar")
+def calendar():
+    return render_template('calendar.html')
+
+
+@app.route("/statistics")
+def statistics():
+    return render_template('statistics.html')
+
+
+@app.route("/announcements")
+def announcements():
+    return render_template('announcements.html', announcements=Announcement.query.all())

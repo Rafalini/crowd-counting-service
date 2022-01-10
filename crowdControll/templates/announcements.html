@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for anno in announcements %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <small class="text-muted">{{ anno.date_posted.strftime('%Y-%m-%d') }}</small>
+            </div>
+            <h2>{{ anno.title }}</h2>
+            <p class="article-content">{{ anno.content }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}
