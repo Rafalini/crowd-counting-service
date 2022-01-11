@@ -1,23 +1,45 @@
-{% extends "layout.html" %}
+{% extends "layout_no_navi.html" %}
 {% block content %}
-<div class="content-section">
-    <h1>About Page</h1>
-    <p class="article-content">
-        This is web service for crowd counting, created for the needs of bachelor's degree.
-        It's main purpose is to provide visualization for crowd counting data from pictures.
-        One of the goals was to analyse possible approaches of image processing for people
-        counting and implement one.
 
+<script type="text/javascript">
+   const tableOfContents = []
+
+   function addEvent(date,number){
+        tableOfContents.push([new Date(date), number]);
+   }
+</script>
+
+<div class="content-section" style="width: 1000px;">
+    <h1>Calendar statistics page</h1>
+    <p class="article-content">
+        Visualization of events in time. If multiple events took place the same day, estimated sum of people from those events is being displayed.
     </p>
 
-    <h3><a href="https://arxiv.org/pdf/2009.13077.pdf">Distribution matching as core counting algorithm</a></h3>
+     {% for post in posts %}
+      <script>addEvent('{{ post.date_posted.strftime('%Y, %m, %d') }}', {{post.number_of_people}});</script>
+     {% endfor %}
 
-    <p class="article-content">
-        In DM-Count, we use Optimal Transport to measure the similarity between the
-        normalized predicted density map and the normalized ground truth density map. To
-        stabilize OT computation, we include a Total Variation loss in our model. We show
-        that the generalization error bound of DM-Count is tighter than that of the
-        Gaussian smoothed methods.
-    </p>
+    <div id="calendar_basic" style="width: 1000px; height: 350px;"></div>
 </div>
+
+<script type="text/javascript">
+   google.charts.load("current", {packages:["calendar"]});
+   google.charts.setOnLoadCallback(drawChart);
+
+   function drawChart(data) {
+       var dataTable = new google.visualization.DataTable();
+       dataTable.addColumn({ type: 'date', id: 'Date' });
+       dataTable.addColumn({ type: 'number', id: 'Won/Loss' });
+       dataTable.addRows(tableOfContents);
+       var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+
+       var options = {
+         title: "Red Sox Attendance",
+         height: 350,
+       };
+
+       chart.draw(dataTable, options);
+   }
+</script>
+
 {% endblock content %}

@@ -208,12 +208,19 @@ def predict():
 
 @app.route("/calendar")
 def calendar():
-    return render_template('calendar.html')
+    posts = Post.query.all()
+    return render_template('calendar.html', posts=posts)
 
 
 @app.route("/statistics")
 def statistics():
-    return render_template('statistics.html')
+    dataset = [0,0,0,0,0,0,0]
+    posts = Post.query.all()
+    for post in posts:
+        weekday = post.date_posted.weekday()
+        dataset[post.date_posted.weekday()] += 1
+        weekday =+ 1
+    return render_template('statistics.html', dataset=dataset)
 
 
 @app.route("/announcements")

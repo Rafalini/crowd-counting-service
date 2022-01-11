@@ -51,13 +51,9 @@ def consumer(queue, app, db):
             if entry == 'exit':
                 break
             post = Post.query.get(entry)
-            print('got entry....post id: ' + str(entry))
             picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
-            print('path:' + picture_path)
             number_of_people = predictor.doPredict(Image.open(picture_path))
-            print('output number:' + str(number_of_people))
             post.number_of_people = number_of_people
             db.session.commit()
-            print('commit post id: ' + str(entry))
         except KeyboardInterrupt:
             print('ignore CTRL-C from worker')

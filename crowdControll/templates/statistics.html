@@ -1,23 +1,64 @@
 {% extends "layout.html" %}
 {% block content %}
+
+<script>
+    const tableOfData = []
+
+    function addData(num){
+        tableOfData.push(num);
+    }
+</script>
+
 <div class="content-section">
     <h1>About Page</h1>
     <p class="article-content">
-        This is web service for crowd counting, created for the needs of bachelor's degree.
-        It's main purpose is to provide visualization for crowd counting data from pictures.
-        One of the goals was to analyse possible approaches of image processing for people
-        counting and implement one.
-
+        Other statistics for web service
     </p>
+    <canvas id="myChart" width="400" height="400"></canvas>
 
-    <h3><a href="https://arxiv.org/pdf/2009.13077.pdf">Distribution matching as core counting algorithm</a></h3>
+    {% for data in dataset %}
+      <script>addData({{data}});</script>
+    {% endfor %}
 
-    <p class="article-content">
-        In DM-Count, we use Optimal Transport to measure the similarity between the
-        normalized predicted density map and the normalized ground truth density map. To
-        stabilize OT computation, we include a Total Variation loss in our model. We show
-        that the generalization error bound of DM-Count is tighter than that of the
-        Gaussian smoothed methods.
-    </p>
 </div>
+<script>
+const ctx = document.getElementById('myChart').getContext('2d');
+const myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Mon', 'Tue', 'Wen', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+            label: 'Most crowded day',
+            data: tableOfData,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 206, 86, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(255, 206, 86, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
 {% endblock content %}
