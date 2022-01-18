@@ -1,5 +1,7 @@
 import os
-import secrets
+
+from crowdControll.functions import save_profile_picture, save_post_picture, getAddress, getAddressPlain
+from crowdControll.displayModels import PlaceGroup
 from flask import render_template, url_for, flash, redirect, request, abort, jsonify
 from werkzeug import exceptions
 from werkzeug.utils import secure_filename
@@ -74,32 +76,6 @@ def logout():
     return redirect(url_for('home'))
 
 
-def save_profile_picture(form_picture):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
-
-    output_size = (125, 125)
-    i = Image.open(form_picture)
-    i.thumbnail(output_size)
-    i.save(picture_path)
-
-    return picture_fn
-
-
-def save_post_picture(form_picture):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, 'static/post_imgs', picture_fn)
-    i = Image.open(form_picture)
-    # output_size = (500, 500)
-    # i.thumbnail(output_size)
-    i.save(picture_path, quality=100)
-    return picture_fn
-
-
 @app.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
@@ -133,6 +109,7 @@ def new_post():
         db.session.add(post)
         db.session.commit()
         db.session.refresh(post)
+        getAddress(post.id)
         queue.put(post.id)
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
@@ -209,17 +186,34 @@ def predict():
 @app.route("/calendar")
 def calendar():
     posts = Post.query.all()
+    # groupedPosts = {}
+    #
+    # for post in posts:
+    #     if post.address not in groupedPosts:
+    #         groupedPosts[post.address] = PlaceGroup()
+    #
+    #     groupedPosts[post.address].posts.append(post)
+    #     groupedPosts[post.address].count += post.number_of_people
+    #
+    # groupedPosts = dict(sorted(groupedPosts.items(), key=lambda item: item[1].count))
+    #
+    # groupsList = []
+    # for key in groupedPosts:
+    #     l1 = []
+    #     for post in groupedPosts[key].posts:
+    #         l1.append(post)
+    #     groupsList.append(l1)
+
     return render_template('calendar.html', posts=posts)
 
 
 @app.route("/statistics")
 def statistics():
-    dataset = [0,0,0,0,0,0,0]
+    dataset = [0, 0, 0, 0, 0, 0, 0]
     posts = Post.query.all()
     for post in posts:
         weekday = post.date_posted.weekday()
         dataset[post.date_posted.weekday()] += 1
-        weekday =+ 1
     return render_template('statistics.html', dataset=dataset)
 
 

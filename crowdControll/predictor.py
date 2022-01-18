@@ -48,12 +48,18 @@ def consumer(queue, app, db):
     while True:
         try:
             entry = queue.get()
-            if entry == 'exit':
-                break
-            post = Post.query.get(entry)
-            picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
-            number_of_people = predictor.doPredict(Image.open(picture_path))
-            post.number_of_people = number_of_people
-            db.session.commit()
         except KeyboardInterrupt:
             print('ignore CTRL-C from worker')
+        if entry == 'exit':
+            break
+        print('take: '+str(entry))
+        post = Post.query.get(entry)
+        picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
+        try:
+            number_of_people = predictor.doPredict(Image.open(picture_path))
+        except Exception:
+            number_of_people = 0
+        print('got:  '+str(entry))
+        post.number_of_people = number_of_people
+        db.session.commit()
+

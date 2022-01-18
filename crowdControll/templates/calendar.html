@@ -19,7 +19,7 @@
       <script>addEvent('{{ post.date_posted.strftime('%Y, %m, %d') }}', {{post.number_of_people}});</script>
      {% endfor %}
 
-    <div id="calendar_basic" style="width: 1000px; height: 350px;"></div>
+    <div id="calendar_basic" style="width: 1000px; height: 500px;"></div>
 </div>
 
 <script type="text/javascript">
@@ -34,8 +34,8 @@
        var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
 
        var options = {
-         title: "Red Sox Attendance",
-         height: 350,
+         title: "Most Crowded Days",
+         height: 500,
        };
 
        chart.draw(dataTable, options);

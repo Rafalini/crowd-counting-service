@@ -30,9 +30,10 @@ class Post(db.Model):
     latitude = db.Column(db.Float, nullable=False, default=45.5)
     longitude = db.Column(db.Float, nullable=False, default=45.5)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    address = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
-        return f"Post('{self.title}', '{self.date_posted}', '{self.image_file}', '{self.number_of_people}')"
+        return f"Post('{self.title}', '{self.user_id}', '{self.address}', '{self.number_of_people}')"
 
 
 class Announcement(db.Model):

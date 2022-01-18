@@ -1,4 +1,6 @@
-from crowdControll import app, db, bcrypt, queue
+import requests
+
+from crowdControll import db, bcrypt, queue
 from crowdControll.models import User, Post, Announcement
 import random
 import time
@@ -11,6 +13,12 @@ def str_time_prop(start, end, time_format, prop):
     ptime = stime + prop * (etime - stime)
     return time.strftime(time_format, time.localtime(ptime))
 
+
+def getAddress(lat, lon):
+    URL = "https://nominatim.openstreetmap.org/reverse"
+    PARAMS = {'lat': lat, 'lon': lon, 'format': 'json'}
+    r = requests.get(url=URL, params=PARAMS)
+    return r.json()['display_name']
 
 db.drop_all()
 db.create_all()
@@ -40,7 +48,8 @@ db.session.add(user_3)
 
 currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
 
-for i in range(1, 50):
+# for i in range(1, 50):
+for i in range(1, 5):
     postname = 'example_post_'
     imagefile = 'img_00'
 
@@ -56,10 +65,13 @@ for i in range(1, 50):
         postname += str(i)
         imagefile += str(i) + '.jpg'
 
-    post = Post(title=postname, content='', image_file=imagefile, number_of_people=-1, latitude=lati, longitude=long, user_id=1)
+    post = Post(title=postname, content='', image_file=imagefile, date_posted=date, number_of_people=-1, latitude=lati, longitude=long, user_id=1)
+    post.address = getAddress(lati, long)
+    print(getAddress(lati, long))
     db.session.add(post)
     db.session.commit()
     db.session.refresh(post)
+    print('put: '+str(i))
     queue.put(post.id)
 
 anno1 = Announcement(title='New version 1.0!', content='New version, new features!')
