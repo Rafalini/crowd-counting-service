@@ -1,6 +1,8 @@
 import os
 
-from crowdControll.functions import save_profile_picture, save_post_picture, getAddress, getAddressPlain
+import flask
+
+from crowdControll.functions import save_profile_picture, save_post_picture, filterPosts, uniquePlaces, getAddress, getAddressPlain
 from crowdControll.displayModels import PlaceGroup
 from flask import render_template, url_for, flash, redirect, request, abort, jsonify
 from werkzeug import exceptions
@@ -183,38 +185,35 @@ def predict():
     return jsonify(response)
 
 
-@app.route("/calendar")
+@app.route("/calendar/", methods=['GET', 'POST'])
 def calendar():
     posts = Post.query.all()
-    # groupedPosts = {}
-    #
-    # for post in posts:
-    #     if post.address not in groupedPosts:
-    #         groupedPosts[post.address] = PlaceGroup()
-    #
-    #     groupedPosts[post.address].posts.append(post)
-    #     groupedPosts[post.address].count += post.number_of_people
-    #
-    # groupedPosts = dict(sorted(groupedPosts.items(), key=lambda item: item[1].count))
-    #
-    # groupsList = []
-    # for key in groupedPosts:
-    #     l1 = []
-    #     for post in groupedPosts[key].posts:
-    #         l1.append(post)
-    #     groupsList.append(l1)
+    places = uniquePlaces(posts)
+    if flask.request.method == 'POST':
+        place = request.form.get('placeSelector')
+        if place != "all places":
+            posts = filterPosts(posts, place)
+    else:
+        place = "all places"
 
-    return render_template('calendar.html', posts=posts)
+    return render_template('calendar.html', posts=posts, places=places, selectedPlace=place)
 
 
-@app.route("/statistics")
+@app.route("/statistics", methods=['GET', 'POST'])
 def statistics():
     dataset = [0, 0, 0, 0, 0, 0, 0]
     posts = Post.query.all()
+    places = uniquePlaces(posts)
+    if flask.request.method == 'POST':
+        place = request.form.get('placeSelector')
+        if place != "all places":
+            posts = filterPosts(posts, place)
+    else:
+        place = "all places"
+
     for post in posts:
-        weekday = post.date_posted.weekday()
         dataset[post.date_posted.weekday()] += 1
-    return render_template('statistics.html', dataset=dataset)
+    return render_template('statistics.html', dataset=dataset, places=places, selectedPlace=place)
 
 
 @app.route("/announcements")

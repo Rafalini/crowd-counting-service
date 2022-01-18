@@ -6,6 +6,7 @@ import requests
 from PIL import Image
 from crowdControll import app, db
 from crowdControll.models import Post
+from crowdControll.displayModels import PlaceGroup
 
 
 def save_profile_picture(form_picture):
@@ -34,13 +35,14 @@ def save_post_picture(form_picture):
     return picture_fn
 
 
-def getAddress(id):
+def getAddressFromDb(id):
     post = Post.query.get(id)
-    URL = "https://nominatim.openstreetmap.org/reverse"
-    PARAMS = {'lat': post.latitude, 'lon': post.longitude, 'format': 'json'}
-    r = requests.get(url=URL, params=PARAMS)
-    post.address = r.json()['display_name']
+    post.address = getAddressPlain(post.latitude, post.longitude)['address']['village']
     db.session.commit()
+
+
+def getAddress(lat, lon):
+    return getAddressPlain(lat, lon)['address']['village']
 
 
 def getAddressPlain(lat, lon):
@@ -67,3 +69,27 @@ def getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2):
 
 def deg2rad(deg):
     return deg * (math.pi / 180)
+
+
+def uniquePlaces(posts):
+    groupedPosts = {}
+
+    for post in posts:
+        if post.address not in groupedPosts:
+            groupedPosts[post.address] = PlaceGroup()
+
+        groupedPosts[post.address].posts.append(post)
+        groupedPosts[post.address].count += post.number_of_people
+
+    places = []
+    for key in groupedPosts:
+        places.append(key)
+    return places
+
+
+def filterPosts(posts, place):
+    for post in posts:
+        if post.address != place:
+            posts.remove(post)
+    return posts
+

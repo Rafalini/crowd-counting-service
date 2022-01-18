@@ -1,6 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
 
+<style>
+select {
+  width: 200px;
+  height: 35px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+</style>
+
 <script>
     const tableOfData = []
 
@@ -10,11 +21,30 @@
 </script>
 
 <div class="content-section">
-    <h1>About Page</h1>
+    <div style="width: 100%; display: table;">
+        <div style="display: table-row">
+            <div style="width: 370px; display: table-cell;"><h1>Other statistics page</h1></div>
+            <div style="display: table-cell;">
+                <form action="" method="post">
+                    <select name="placeSelector" method="POST" action="/">
+                        <option value="all places" SELECTED>all places</option>"
+                        {% for place in places %}
+                            {%if place == selectedPlace%}
+                                <option value="{{place}}" SELECTED>{{place}}</option>"
+                            {% else %}
+                                <option value="{{place}}">{{place}}</option>"
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-primary" name="submit" value="place">Go Go Go!</button>
+                </form>
+          </div>
+        </div>
+    </div>
     <p class="article-content">
         Other statistics for web service
     </p>
-    <canvas id="myChart" width="400" height="400"></canvas>
+    <canvas id="myChart" width="400" height="300"></canvas>
 
     {% for data in dataset %}
       <script>addData({{data}});</script>

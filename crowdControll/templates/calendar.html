@@ -1,6 +1,17 @@
 {% extends "layout_no_navi.html" %}
 {% block content %}
 
+<style>
+select {
+  width: 200px;
+  height: 35px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 30px;
+  margin-left: 10px;
+}
+</style>
+
 <script type="text/javascript">
    const tableOfContents = []
 
@@ -10,7 +21,26 @@
 </script>
 
 <div class="content-section" style="width: 1000px;">
-    <h1>Calendar statistics page</h1>
+    <div style="width: 100%; display: table;">
+        <div style="display: table-row">
+            <div style="width: 500px; display: table-cell;"><h1>Calendar statistics page</h1></div>
+            <div style="display: table-cell;">
+                <form action="" method="post">
+                    <select name="placeSelector" method="POST" action="/">
+                        <option value="all places" SELECTED>all places</option>"
+                        {% for place in places %}
+                            {%if place == selectedPlace%}
+                                <option value="{{place}}" SELECTED>{{place}}</option>"
+                            {% else %}
+                                <option value="{{place}}">{{place}}</option>"
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-primary" name="submit" value="place">Go Go Go!</button>
+                </form>
+          </div>
+        </div>
+    </div>
     <p class="article-content">
         Visualization of events in time. If multiple events took place the same day, estimated sum of people from those events is being displayed.
     </p>
@@ -34,7 +64,7 @@
        var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
 
        var options = {
-         title: "Most Crowded Days",
+         title: "Crowds in {{selectedPlace}} over time",
          height: 500,
        };
 

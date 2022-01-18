@@ -2,6 +2,7 @@ import requests
 
 from crowdControll import db, bcrypt, queue
 from crowdControll.models import User, Post, Announcement
+from crowdControll.functions import getAddress
 import random
 import time
 import datetime
@@ -12,13 +13,6 @@ def str_time_prop(start, end, time_format, prop):
     etime = time.mktime(time.strptime(end, time_format))
     ptime = stime + prop * (etime - stime)
     return time.strftime(time_format, time.localtime(ptime))
-
-
-def getAddress(lat, lon):
-    URL = "https://nominatim.openstreetmap.org/reverse"
-    PARAMS = {'lat': lat, 'lon': lon, 'format': 'json'}
-    r = requests.get(url=URL, params=PARAMS)
-    return r.json()['display_name']
 
 db.drop_all()
 db.create_all()
