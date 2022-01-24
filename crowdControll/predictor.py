@@ -1,3 +1,5 @@
+from shutil import copyfile
+
 from crowdControll.trainedModel.models import predict, init
 from crowdControll.models import Post
 from threading import Lock, Thread
@@ -52,14 +54,16 @@ def consumer(queue, app, db):
             print('ignore CTRL-C from worker')
         if entry == 'exit':
             break
-        print('take: '+str(entry))
+        print('current processing post-picture id: '+str(entry))
         post = Post.query.get(entry)
         picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
         try:
             number_of_people = predictor.doPredict(Image.open(picture_path))
         except Exception:
+            print('error on: '+picture_path)
+            error_path = os.path.join(app.root_path, 'static/post_imgs/errors/')
+            copyfile(picture_path, error_path)
             number_of_people = 0
-        print('got:  '+str(entry))
         post.number_of_people = number_of_people
         db.session.commit()
 

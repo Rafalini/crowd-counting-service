@@ -16,18 +16,19 @@ from flask_login import login_user, current_user, logout_user, login_required
 from PIL import Image
 
 predictor = Predictor(queue, db, app)
-
+db.create_all()
 
 @app.route("/")
 @app.route("/home")
 def home():
-    posts = Post.query.all()
-    posts.sort(key=lambda x: x.date_posted, reverse=True)
-    for post in posts:
+    page = request.args.get('page', 1, type=int)
+    paginate = Post.query.paginate(page=page, per_page=5)
+    paginate.items.sort(key=lambda x: x.date_posted, reverse=True)
+    for post in paginate.items:
         picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
         if not os.path.isfile(picture_path):
             post.image_file = 'default.jpg'
-    return render_template('home.html', posts=posts)
+    return render_template('home.html', posts=paginate)
 
 
 @app.route("/about")
@@ -111,7 +112,7 @@ def new_post():
         db.session.add(post)
         db.session.commit()
         db.session.refresh(post)
-        getAddress(post.id)
+        getAddress(post.latitude, post.longitude)
         queue.put(post.id)
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))

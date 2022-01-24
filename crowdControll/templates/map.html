@@ -1,7 +1,17 @@
-{% extends "layout.html" %}
+{% extends "layout_no_navi.html" %}
 {% block content %}
 
-<div id="map" style="height: 750px;"></div>
+<style>
+div.solid {
+    border: thick solid rgb(3, 252, 240);
+}
+
+.center {
+  text-align: center;
+}
+</style>
+
+<div class="solid" id="map" style="height: 800px; width:1100px;"></div>
 
 <script type="text/javascript">
   var map = L.map('map').setView([52.237, 21.017], 11);
@@ -22,14 +32,15 @@
 
         var html = '<div class="circle">' + sum + '</div>';
         return L.divIcon({ html: html, className: 'mycircle', iconSize: L.point(45, 45) });
-    }, spiderfyOnMaxZoom: false, showCoverageOnHover: true, zoomToBoundsOnClick: false
+    },
+    spiderfyOnMaxZoom: false, showCoverageOnHover: false, zoomToBoundsOnClick: false
 });
 </script>
 
 <script>
-    function addMarker(lat,lon,num,picture){
+    function addMarker(lat,lon,num,title,picture){
         picture = '../static/post_imgs/'+picture
-        var photoImg = '<img src='+picture+' height="100px" width="150px"/>';
+        var photoImg = '<div class="center"><img src='+picture+' height="150px" width="200px"/><p>'+title+'</p><p> People count: '+num+'</p></div>';
         var marker = L.marker([lat,lon]);
         marker.num = num;
         marker.lat = lat;
@@ -40,7 +51,7 @@
 </script>
 
  {% for post in posts %}
-      <script>addMarker({{post.latitude}}, {{post.longitude}}, {{post.number_of_people}}, '{{post.image_file}}');</script>
+      <script>addMarker({{post.latitude}}, {{post.longitude}}, {{post.number_of_people}}, '{{post.title}}', '{{post.image_file}}');</script>
  {% endfor %}
 
 <script>

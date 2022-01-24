@@ -37,12 +37,21 @@ def save_post_picture(form_picture):
 
 def getAddressFromDb(id):
     post = Post.query.get(id)
-    post.address = getAddressPlain(post.latitude, post.longitude)['address']['village']
+    post.address = getAddress(post.latitude, post.longitude)
     db.session.commit()
 
 
-def getAddress(lat, lon):
-    return getAddressPlain(lat, lon)['address']['village']
+def getAddress(lat, lon): #municipality, city, town, village
+    address = getAddressPlain(lat, lon)['address']
+    if 'municipality' in address:
+        return address['municipality']
+    if 'city' in address:
+        return 'miasto ' + address['city']
+    if 'town' in address:
+        return 'miasteczko ' + address['town']
+    if 'village' in address:
+        return 'wieś ' + address['village']
+    return 'unknown place'
 
 
 def getAddressPlain(lat, lon):
