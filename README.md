@@ -11,7 +11,7 @@ Web service app for counting people from pictures.
       
    `app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db?check_same_thread=False'`
    
-4. Optional:  In root directory/crowdControll/__init__.py configure email server (for password reseting etc):
+4. Optional:  In root directory/crowdControll/\_\_init\_\_.py configure email server (for password reseting etc):
  ```
     app.config['MAIL_SERVER'] = 'EMAIL_SERVER'
     app.config['MAIL_PORT'] = 0
