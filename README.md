@@ -7,7 +7,8 @@ Web service app for counting people from pictures.
 2. Get dependencies: `pip install -r requirements.txt`
 3. Set variables for database connection (URI, Username, Password) for existing soluutions like  [Oracle](https://www.oracle.com/pl/database/), [SQL Server](https://www.microsoft.com/pl-pl/sql-server/sql-server-2019) or any other.
 
-  Or configure local database file, for example:
+   Or configure local database file, for example:
+      
    `app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db?check_same_thread=False'`
    
 4. Optional:  In root directory/crowdControll/__init__.py configure email server (for password reseting etc):
