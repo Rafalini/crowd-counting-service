@@ -6,7 +6,7 @@ Web service app for counting people from pictures.
   a) optional is to use [vnenv](https://docs.python.org/3/library/venv.html)
 2. Get dependencies: `pip install -r requirements.txt`
 3. Set variables for database connection (URI, Username, Password) for existing soluutions like  [Oracle](https://www.oracle.com/pl/database/), [SQL Server](https://www.microsoft.com/pl-pl/sql-server/sql-server-2019) or any other.
-4. 
+
   Or configure local database file, for example:
    `app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db?check_same_thread=False'`
    
