@@ -43,14 +43,18 @@ def getAddressFromDb(id):
 
 def getAddress(lat, lon): #municipality, city, town, village
     address = getAddressPlain(lat, lon)['address']
-    if 'municipality' in address:
-        return address['municipality']
-    if 'city' in address:
-        return 'miasto ' + address['city']
-    if 'town' in address:
-        return 'miasteczko ' + address['town']
-    if 'village' in address:
-        return 'wieś ' + address['village']
+    # if 'county' in address:
+    #     return address['county']
+    if 'state' in address:
+        return address['state']
+    # if 'municipality' in address:
+    #     return address['municipality']
+    # if 'city' in address:
+    #     return 'miasto ' + address['city']
+    # if 'town' in address:
+    #     return 'miasteczko ' + address['town']
+    # if 'village' in address:
+    #     return 'wieś ' + address['village']
     return 'unknown place'
 
 
