@@ -41,8 +41,8 @@ class Predictor(metaclass=SingletonMeta):
     def doPredict(self, inp):
         result = 0
         with self.predictionLock:
-            result = predict(inp, self.device, self.model)
-        return result
+            out_map, result = predict(inp, self.device, self.model)
+        return out_map, result
 
 
 def consumer(queue, app, db):
@@ -57,8 +57,11 @@ def consumer(queue, app, db):
         print('current processing post-picture id: '+str(entry))
         post = Post.query.get(entry)
         picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
+        map_path = os.path.join(app.root_path, 'static/maps', post.image_file)
         try:
-            number_of_people = predictor.doPredict(Image.open(picture_path))
+            out_map, number_of_people = predictor.doPredict(Image.open(picture_path))
+            i = Image.fromarray(out_map)
+            i.save(map_path, quality=100)
         except Exception:
             print('error on: '+picture_path)
             error_path = os.path.join(app.root_path, 'static/post_imgs/errors/')

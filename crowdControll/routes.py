@@ -128,9 +128,13 @@ def new_post():
 def post(post_id):
     post = Post.query.get_or_404(post_id)
     picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
+    map_path = os.path.join(app.root_path, 'static/maps', post.image_file)
+    mapExists = True
     if not os.path.isfile(picture_path):
         post.image_file = 'default.jpg'
-    return render_template('post.html', title=post.title, post=post)
+    if not os.path.isfile(map_path):
+        mapExists = False
+    return render_template('post.html', title=post.title, post=post, mapExists=mapExists)
 
 
 @app.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
