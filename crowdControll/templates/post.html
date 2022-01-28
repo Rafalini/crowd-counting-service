@@ -16,6 +16,11 @@
       <div class="article-metadata">
         <h2 class="article-title">{{ post.title }}</h2>
         <p class="article-content">{{ post.content }}</p>
+        {% if post.number_of_people > -1 %}
+            <h3><a class="article-title">Number of people: {{ post.number_of_people }}</a></h3>
+        {% else %}
+            <h3><a class="article-title">Calculating number of people...</a></h3>
+        {% endif %}
       <img class="testsm w3-hover-opacity w3-border" src="{{ url_for('static', filename='post_imgs/' + post.image_file) }}"  style="padding:4px;width:85%">
       </div>
       {% if mapExists %}

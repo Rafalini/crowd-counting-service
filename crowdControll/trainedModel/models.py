@@ -6,7 +6,7 @@ import torch
 import cv2
 import numpy as np
 
-model_path = "crowdControll/trainedModel/model_qnrf.pth"
+model_path = "crowdControll/trainedModel/model_nwpu.pth"
 
 __all__ = ['vgg19', 'model_path', 'predict', 'init']
 model_urls = {
@@ -28,7 +28,7 @@ class VGG(nn.Module):
 
     def forward(self, x):
         x = self.features(x)
-        x = F.upsample_bilinear(x, scale_factor=2)
+        x = F.interpolate(x, scale_factor=2)
         x = self.reg_layer(x)
         mu = self.density_layer(x)
         B, C, H, W = mu.size()

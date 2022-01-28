@@ -68,10 +68,10 @@ for i in range(1, n):
     postname = getSentence()
     imagefile = 'img_00'
     content = getSentence()+getSentence()+getSentence()
-    long = random.uniform(20, 22)
-    lati = random.uniform(51.7, 52.6)
-    long = random.uniform(17, 24)
-    lati = random.uniform(47, 53)
+    # long = random.uniform(20, 22)
+    # lati = random.uniform(51.7, 52.6)
+    long = random.uniform(17, 22)
+    lati = random.uniform(47, 52.6)
 
     date = str_time_prop('2020-01-01', currentDate, '%Y-%m-%d', random.uniform(0, 1))
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
