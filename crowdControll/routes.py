@@ -112,11 +112,10 @@ def new_post():
                     longitude=form.longitude.data, author=current_user)
 
         post.image_file = save_post_picture(form.picture.data)
-        post.number_of_people = -1
+        post.address = getAddress(post.latitude, post.longitude)
         db.session.add(post)
         db.session.commit()
         db.session.refresh(post)
-        getAddress(post.latitude, post.longitude)
         queue.put(post.id)
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
