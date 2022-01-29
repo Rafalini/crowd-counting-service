@@ -7,6 +7,7 @@ from PIL import Image
 import torch
 import os
 
+torch.backends.cudnn.benchmark = True
 
 class SingletonMeta(type):
 
@@ -33,7 +34,7 @@ class Predictor(metaclass=SingletonMeta):
         self.db = db
         self.app = app
         self.queue = queue
-        self.device = torch.device('cpu')  # device can be "cpu" or "gpu"
+        self.device = torch.device('cuda')  # device can be "cpu" or "gpu"
         self.model = init(self.device)
         self.proc = Thread(target=consumer, args=(queue, app, db))
         self.proc.start()
@@ -56,17 +57,18 @@ def consumer(queue, app, db):
             break
         print('current processing post-picture id: '+str(entry))
         post = Post.query.get(entry)
-        picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
-        map_path = os.path.join(app.root_path, 'static/maps', post.image_file)
+        picture_path = os.path.join(app.root_path, 'static', 'post_imgs', post.image_file)
+        map_path = os.path.join(app.root_path, 'static', 'maps', post.image_file)
         try:
             out_map, number_of_people = predictor.doPredict(Image.open(picture_path))
             i = Image.fromarray(out_map)
             i.save(map_path, quality=100)
         except Exception:
             print('error on: '+picture_path)
-            error_path = os.path.join(app.root_path, 'static/post_imgs/errors/')
-            copyfile(picture_path, error_path)
+            error_path = os.path.join(app.root_path, 'static', 'post_imgs', 'errors')
+            # copyfile(picture_path, error_path)
             number_of_people = 0
         post.number_of_people = number_of_people
+        torch.cuda.empty_cache()
         db.session.commit()
 
