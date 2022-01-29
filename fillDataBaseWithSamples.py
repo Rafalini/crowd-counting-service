@@ -63,6 +63,7 @@ db.session.add(user_2)
 db.session.add(user_3)
 
 currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
+announcments=0
 
 for i in range(1, n):
     postname = getSentence()
@@ -87,6 +88,10 @@ for i in range(1, n):
     db.session.add(post)
     db.session.commit()
     db.session.refresh(post)
+
+    if i == 5**announcments:
+        announcments+=1
+        db.session.add(Announcement(title='New version 1.0!', content='First version!'))
 
     if quick:
         post.number_of_people = random.randint(10, 1234)

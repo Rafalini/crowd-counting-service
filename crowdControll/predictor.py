@@ -1,3 +1,4 @@
+import time
 from shutil import copyfile
 
 from crowdControll.trainedModel.models import predict, init
@@ -47,6 +48,10 @@ class Predictor(metaclass=SingletonMeta):
 
 def consumer(queue, app, db):
     predictor = Predictor(queue, app, db)
+    samples = 0
+    totalTime = 0
+    minTime = 100
+    maxTime = 0
     while True:
         try:
             entry = queue.get()
@@ -54,6 +59,7 @@ def consumer(queue, app, db):
             print('ignore CTRL-C from worker')
         if entry == 'exit':
             break
+        start_time = time.time()
         print('current processing post-picture id: '+str(entry))
         post = Post.query.get(entry)
         picture_path = os.path.join(app.root_path, 'static/post_imgs', post.image_file)
@@ -68,5 +74,15 @@ def consumer(queue, app, db):
             copyfile(picture_path, error_path)
             number_of_people = 0
         post.number_of_people = number_of_people
+        samples += 1
+        duration = time.time() - start_time
+        if duration > maxTime:
+            maxTime = duration
+        if duration < minTime:
+            minTime = duration
+        totalTime += duration
+        print('avg processing time:'+str(round(totalTime/samples, 2)))
+        print('max processing time:'+str(round(maxTime, 2)))
+        print('min processing time:'+str(round(minTime, 2)))
         db.session.commit()
 
