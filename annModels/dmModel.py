@@ -4,7 +4,6 @@ from torch.nn import functional as F
 from torchvision import transforms
 import torch
 
-model_path = "crowdControll/trainedModel/model_qnrf.pth"
 model_path = "crowdControll/trainedModel/model_nwpu.pth"
 
 __all__ = ['vgg19', 'model_path', 'predict', 'init']

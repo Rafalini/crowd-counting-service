@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch.utils.model_zoo as model_zoo
 from torch.nn import functional as F
 from torchvision import transforms
 import torch
@@ -9,9 +8,6 @@ import numpy as np
 model_path = "crowdControll/trainedModel/model_nwpu.pth"
 
 __all__ = ['vgg19', 'model_path', 'predict', 'init']
-model_urls = {
-    'vgg19': 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
-}
 
 
 class VGG(nn.Module):
@@ -60,7 +56,6 @@ cfg = {
 
 def vgg19():
     model = VGG(make_layers(cfg['E']))
-    model.load_state_dict(model_zoo.load_url(model_urls['vgg19']), strict=False)
     return model
 
 
@@ -79,7 +74,6 @@ def predict(inp, device, model):
         outputs, _ = model(inp)
     count = torch.sum(outputs).item()
     vis_img = outputs[0, 0].cpu().numpy()
-    # normalize density map values from 0 to 1, then map it to 0-255.
     vis_img = (vis_img - vis_img.min()) / (vis_img.max() - vis_img.min() + 1e-5)
     vis_img = (vis_img * 255).astype(np.uint8)
     vis_img = cv2.applyColorMap(vis_img, cv2.COLORMAP_JET)
