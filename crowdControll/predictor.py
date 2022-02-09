@@ -34,7 +34,7 @@ class Predictor(metaclass=SingletonMeta):
         self.db = db
         self.app = app
         self.queue = queue
-        self.device = torch.device('cuda')  # device can be "cpu" or "gpu"
+        self.device = torch.device('cpu')  # device can be "cpu" or "gpu"
         self.model = init(self.device)
         self.proc = Thread(target=consumer, args=(queue, app, db))
         self.proc.start()

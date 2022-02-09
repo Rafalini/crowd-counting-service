@@ -1,7 +1,6 @@
 import argparse
 import os
 import torch
-from train_helper import Trainer
 
 
 def str2bool(v):
