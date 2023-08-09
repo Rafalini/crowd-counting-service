@@ -1,5 +1,11 @@
-# Crowd controll  
-Web service app for counting people from pictures.
+# Crowd counting and mapping 🧍‍♂️🧍‍♂️🧍‍♂️
+Web service app for counting people from pictures. Users can post crowded images from mass events which will be processed (people counting will be performed, based on [density function](https://arxiv.org/pdf/1907.12428.pdf) )
+
+![image](https://github.com/Rafalini/crowd-counting-service/assets/44322872/aa5e255a-f29f-442c-8c02-1acb2b833f70)
+
+All processed data is agregated and marked on map:
+
+<img src="https://github.com/Rafalini/crowd-counting-service/assets/44322872/2836e173-2f1a-4400-a966-3ee49d626ac7" width="600" height="400">
 
 # Build 🔨 and run 🚘
 1. App is build using [Python](https://www.python.org/), hence it requires Python 3.X.X interpreter along with [pip](https://pypi.org/project/pip/)
